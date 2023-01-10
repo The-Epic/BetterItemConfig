@@ -5,6 +5,8 @@ plugins {
     id 'maven-publish'
 }
 
+compileJava.options.encoding = 'UTF-8'
+
 group = 'me.epic'
 version = '1.0.0'
 

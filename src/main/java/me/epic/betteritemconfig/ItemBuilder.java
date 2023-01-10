@@ -39,6 +39,17 @@ public class ItemBuilder {
         this.meta = this.item.getItemMeta();
     }
 
+    public ItemBuilder() {
+        this.item = new ItemStack(Material.BARRIER, 1);
+        this.meta = this.item.getItemMeta();
+    }
+
+    public ItemBuilder material(Material material) {
+        this.item.setType(material);
+
+        return this;
+    }
+
     public ItemBuilder amount(int amount) {
         this.item.setAmount(amount);
 
