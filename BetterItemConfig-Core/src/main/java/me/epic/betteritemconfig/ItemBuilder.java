@@ -4,8 +4,10 @@ package me.epic.betteritemconfig;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -14,6 +16,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -25,10 +29,10 @@ import java.util.List;
  * For internal use only
  */
 public class ItemBuilder {
-
-    private static final String TEXTURE_URL = "http://textures.minecraft.net/texture/";
     private ItemStack item;
     private ItemMeta meta;
+
+    private Map<String, Object> nbtToAdd = new HashMap<>();
 
     public ItemBuilder(Material material) {
         this(material, 1);
@@ -112,13 +116,6 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder skullTexture(Player player) {
-        if (!(this.meta instanceof SkullMeta skullMeta)) return this;
-        skullMeta.setOwningPlayer(player);
-
-        return this;
-    }
-
     // Hex with #
     public ItemBuilder colour(String hex) {
         if (this.meta instanceof PotionMeta potionMeta) {
@@ -148,10 +145,24 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder basePotionEffect(String potion) {
+        nbtToAdd.put("Potion", potion);
+        return this;
+    }
+
+    public <T, Z> ItemBuilder persistentData(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
+        this.meta.getPersistentDataContainer().set(key, type, value);
+
+        return this;
+    }
+
     public ItemStack build() {
         ItemStack finalItem = this.item;
         finalItem.setItemMeta(this.meta);
-
-        return finalItem;
+        NBTItem nbtItem = new  NBTItem(finalItem);
+        for (Map.Entry entry : nbtToAdd.entrySet()) {
+            nbtItem.setString((String) entry.getKey(), (String) entry.getValue());
+        }
+        return nbtItem.getItem();
     }
 }
