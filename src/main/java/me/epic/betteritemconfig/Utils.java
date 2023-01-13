@@ -1,11 +1,13 @@
 package me.epic.betteritemconfig;
 
 import net.minecraft.nbt.NBTBase;
+import org.bukkit.Bukkit;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Locale;
 import java.util.Map;
 
 public class Utils {
@@ -42,5 +44,32 @@ public class Utils {
         } else {
             return PersistentDataType.BYTE_ARRAY;
         }
+    }
+
+    public static Object convertToCorrectType(String string, String type) {
+        switch (type.toLowerCase(Locale.ROOT)) {
+            case "int", "integer" -> {
+                return Integer.parseInt(string);
+            }
+            case "long" -> {
+                return Long.parseLong(string);
+            }
+            case "double" -> {
+                return Double.parseDouble(string);
+            }
+            case "float" -> {
+                return Float.parseFloat(string);
+            }
+            case "short" -> {
+                return Short.parseShort(string);
+            }
+            case "byte" -> {
+                return Byte.parseByte(string);
+            }
+            default -> {
+                return string;
+            }
+        }
+
     }
 }

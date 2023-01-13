@@ -14,10 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -25,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
+@SuppressWarnings({"unchecked", "deprecation"})
 public class BetterItemConfig {
 
     @Getter
@@ -42,12 +40,22 @@ public class BetterItemConfig {
     /**
      * Save an item stack to specific path in ConfigurationFile
      *
-     * @param configurationFile the file
+     * @param configurationFile the file to add to
      * @param path to save at
      * @param toSerialize to save
      */
     public static void toConfig(FileConfiguration configurationFile, String path, ItemStack toSerialize) {
-        ConfigurationSection configurationSection = configurationFile.createSection(path);
+        ConfigurationSection section = configurationFile.createSection(path);
+        toConfig(section, toSerialize);
+    }
+
+    /**
+     * Save an item to specific ConfigurationSection
+     *
+     * @param configurationSection the section to save in
+     * @param toSerialize to save
+     */
+    public static void toConfig(ConfigurationSection configurationSection, ItemStack toSerialize) {
         NBTItem itemNBT = new NBTItem(toSerialize);
         configurationSection.set("type", toSerialize.getType().toString());
         configurationSection.set("amount", toSerialize.getAmount());
@@ -96,6 +104,15 @@ public class BetterItemConfig {
                 Color color = leatherArmorMeta.getColor();
                 String hex = "#" + Integer.toHexString(color.asRGB()).substring(2);
                 configurationSection.set("dye", hex);
+            } else if (itemMeta instanceof BookMeta bookMeta) {
+                if (bookMeta.hasTitle()) configurationSection.set("book-info.title", bookMeta.getTitle().replace('§', '&'));
+                if (bookMeta.hasAuthor()) configurationSection.set("book-info.author", bookMeta.getAuthor().replace('§', '&'));
+                if (bookMeta.hasPages()) {
+                    List<String> pages = new ArrayList<>();
+                    bookMeta.getPages().forEach(page -> pages.add(page.replace('§', '&')));
+                    configurationSection.set("book-info.pages", pages);
+                }
+                if (bookMeta.hasGeneration()) configurationSection.set("book-info.generation", bookMeta.getGeneration().toString());
             }
             if (!itemMeta.getPersistentDataContainer().getKeys().isEmpty()) {
                 PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
@@ -107,7 +124,7 @@ public class BetterItemConfig {
                 }
                 stringNBTBaseMap.forEach((key, value) -> {
                     configurationSection.set("pdc." + key + ".type", value.getClass().getSimpleName().toUpperCase(Locale.ROOT).replace("NBTTAG", ""));
-                    configurationSection.set("pdc." + key + ".value", value.toString());
+                    configurationSection.set("pdc." + key + ".value", Utils.convertToCorrectType(value.toString(), value.getClass().getSimpleName().replace("NBTTag", "")));
                 });
 
             }
@@ -115,14 +132,24 @@ public class BetterItemConfig {
     }
 
     /**
-     * Gets an itemstack from ConfigurationFile
+     * Gets an ItemStack from ConfigurationFile
      *
      * @param configuration File to get from
      * @param path to get the ItemStack
      * @return ItemStack from config
      */
     public static ItemStack fromConfig(FileConfiguration configuration, String path) {
-        Map<String, Object> itemMap = configuration.getConfigurationSection(path).getValues(true);
+        return fromConfig(configuration.getConfigurationSection(path));
+    }
+
+    /**
+     * Get an ItemStack from ConfigurationFile
+     *
+     * @param section to get from
+     * @return ItemStack from section
+     */
+    public static ItemStack fromConfig(ConfigurationSection section) {
+        Map<String, Object> itemMap = section.getValues(true);
         ItemBuilder builder = new ItemBuilder(Material.getMaterial(itemMap.get("type").toString().toUpperCase(Locale.ROOT)));
         builder.amount((Integer) itemMap.get("amount"));
         if (itemMap.containsKey("name")) builder.name((String) itemMap.get("name"));
@@ -162,17 +189,25 @@ public class BetterItemConfig {
         if (itemMap.containsKey("dye")) builder.colour((String) itemMap.get("dye"));
         if (itemMap.containsKey("texture")) builder.skullTexture((String) itemMap.get("texture"));
         if (itemMap.containsKey("pdc")) {
-            ConfigurationSection pdcSection = configuration.getConfigurationSection(path + ".pdc");
+            ConfigurationSection pdcSection = section.getConfigurationSection("pdc");
             for (String value : pdcSection.getKeys(false)) {
-                ConfigurationSection pdcInfoSection = configuration.getConfigurationSection(path + ".pdc." + value);
+                ConfigurationSection pdcInfoSection = section.getConfigurationSection("pdc." + value);
                 Plugin plugin = Bukkit.getPluginManager().getPlugin(Arrays.stream(value.split(":")).toList().get(0));
                 if (plugin == null) {
                     throw new PluginNotFoundException("Plugin: :\"" + Arrays.stream(value.split(":")).toList().get(0) + "\" was not Found");
                 }
                 NamespacedKey key = new NamespacedKey(plugin, Arrays.stream(value.split(":")).toList().get(1));
-                System.out.println("type : " + pdcInfoSection.get("type") + " value : " + pdcInfoSection.get("value"));
-                builder.persistentData(key, Utils.getPDT(pdcInfoSection.get("type")), pdcInfoSection.get("value"));
+                builder.persistentData(key,
+                        Utils.getPDT(Utils.convertToCorrectType(pdcInfoSection.getString("value"), pdcInfoSection.getString("type"))),
+                        Utils.convertToCorrectType(pdcInfoSection.getString("value").replace("\"", ""), pdcInfoSection.getString("type")));
             }
+        }
+        if (itemMap.containsKey("book-info")) {
+            ConfigurationSection bookSection = section.getConfigurationSection("book-info");
+            if (bookSection.contains("author")) builder.author(bookSection.getString("author"));
+            if (bookSection.contains("generation")) builder.generation(BookMeta.Generation.valueOf(bookSection.getString("generation")));
+            if (bookSection.contains("title")) builder.title(bookSection.getString("title"));
+            if (bookSection.contains("pages")) builder.pages(bookSection.getStringList("pages"));
         }
 
 

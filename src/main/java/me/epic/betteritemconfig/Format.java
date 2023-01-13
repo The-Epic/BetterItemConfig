@@ -17,4 +17,21 @@ public class Format {
 
     }
 
+    public static String formatBookPage(String originalString) {
+        char[] inputChars = originalString.toCharArray();
+        int counter = 0;
+
+        for (int i = 0; i < inputChars.length; i++) {
+            if (inputChars[i] == '&') {
+                counter++;
+                if (counter % 2 != 0) {
+                    inputChars[i] = '§';
+                }
+            }
+        }
+
+        String replaced = new String(inputChars);
+        return replaced;
+    }
+
 }

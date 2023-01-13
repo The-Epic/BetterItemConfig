@@ -12,15 +12,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.awt.print.Book;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.List;
@@ -43,25 +41,9 @@ public class ItemBuilder {
         this.meta = this.item.getItemMeta();
     }
 
-    public ItemBuilder() {
-        this.item = new ItemStack(Material.BARRIER, 1);
-        this.meta = this.item.getItemMeta();
-    }
-
-    public ItemBuilder material(Material material) {
-        this.item.setType(material);
-
-        return this;
-    }
-
     public ItemBuilder amount(int amount) {
         this.item.setAmount(amount);
 
-        return this;
-    }
-
-    public ItemBuilder enchantment(Enchantment enchantment, int level) {
-        this.meta.addEnchant(enchantment, level, true);
         return this;
     }
 
@@ -152,6 +134,34 @@ public class ItemBuilder {
 
     public <T, Z> ItemBuilder persistentData(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
         this.meta.getPersistentDataContainer().set(key, type, value);
+
+        return this;
+    }
+
+    public ItemBuilder generation(BookMeta.Generation generation) {
+        if (!(this.meta instanceof BookMeta bookMeta)) return this;
+        bookMeta.setGeneration(generation);
+
+        return this;
+    }
+
+    public ItemBuilder author(String string) {
+        if (!(this.meta instanceof BookMeta bookMeta)) return this;
+        bookMeta.setAuthor(Format.format(string));
+
+        return this;
+    }
+
+    public ItemBuilder title(String string) {
+        if (!(this.meta instanceof BookMeta bookMeta)) return this;
+        bookMeta.setTitle(Format.format(string));
+
+        return this;
+    }
+
+    public ItemBuilder pages(List<String> pages) {
+        if (!(this.meta instanceof BookMeta bookMeta)) return this;
+        pages.forEach(page -> bookMeta.addPage(Format.formatBookPage(page)));
 
         return this;
     }

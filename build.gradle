@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "io.freefair.lombok" version "6.6-rc1"
+    id 'maven-publish'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+group = 'me.epic'
+version = '1.0.0-DEV'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = "CodeMC"
+        url = "https://repo.codemc.org/repository/maven-public/"
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
+    compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.11.0'
+    compileOnly group: 'net.kyori', name: 'adventure-text-serializer-legacy', version: '4.11.0'
+    implementation("de.tr7zw:item-nbt-api:2.11.1")
+}
+
+shadowJar{
+    archiveClassifier.set('')
+    relocate("de.tr7zw.changeme.nbtapi", "me.epic.betteritemconfig.nbtapi")
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+
+    }
+}
