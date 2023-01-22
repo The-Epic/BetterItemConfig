@@ -25,7 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "deprecation"})
-@Deprecated
+@Deprecated(forRemoval = true)
 public class BetterItemConfig {
 
     @Getter

@@ -13,7 +13,7 @@ public class ItemFactory {
     public static final ItemFactory DEFAULT = new ItemFactory.Builder()
             .register(new LoreHandler())
             .register(new CustomEffectHandler())
-
+            .register(new NameHandler())
             .build();
 
     protected final BaseProcessor baseProcessor;
