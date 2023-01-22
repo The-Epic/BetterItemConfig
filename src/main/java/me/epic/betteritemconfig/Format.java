@@ -1,6 +1,7 @@
 package me.epic.betteritemconfig;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
@@ -18,20 +19,7 @@ public class Format {
     }
 
     public static String formatBookPage(String originalString) {
-        char[] inputChars = originalString.toCharArray();
-        int counter = 0;
-
-        for (int i = 0; i < inputChars.length; i++) {
-            if (inputChars[i] == '&') {
-                counter++;
-                if (counter % 2 != 0) {
-                    inputChars[i] = '§';
-                }
-            }
-        }
-
-        String replaced = new String(inputChars);
-        return replaced;
+        return usingMiniMessage ? SERIALIZER.serialize(GsonComponentSerializer.gson().deserialize(originalString)) : "Please contact the plugin author that to use book-format saving they must use MiniMessages";
     }
 
 }

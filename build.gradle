@@ -8,7 +8,7 @@ plugins {
 compileJava.options.encoding = 'UTF-8'
 
 group = 'me.epic'
-version = '1.0.0-DEV'
+version = '2.0.0-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -20,9 +20,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.18-R0.1-SNAPSHOT'
     compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.11.0'
     compileOnly group: 'net.kyori', name: 'adventure-text-serializer-legacy', version: '4.11.0'
+    compileOnly "net.kyori:adventure-text-serializer-gson:4.12.0"
     implementation("de.tr7zw:item-nbt-api:2.11.1")
 }
 
@@ -35,6 +36,19 @@ publishing {
     publications {
         shadow(MavenPublication) { publication ->
             project.shadow.component(publication)
+
+            repositories {
+                maven {
+                    credentials {
+                        credentials {
+                            username = "$jeffMediaUser"
+                            password = "$jeffMediaPass"
+                        }
+                    }
+
+                    url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-community/'
+                }
+            }
         }
 
     }

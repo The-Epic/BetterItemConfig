@@ -4,12 +4,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
+import me.epic.betteritemconfig.exceptions.PluginNotFoundException;
 import net.minecraft.nbt.NBTBase;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -23,10 +25,11 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "deprecation"})
+@Deprecated
 public class BetterItemConfig {
 
     @Getter
-    public static boolean useMiniMessage;
+    public static boolean useMiniMessage = false;
 
     /**
      * Initialize the library
@@ -82,13 +85,13 @@ public class BetterItemConfig {
                 if (textureToAdd != null) configurationSection.set("texture", textureToAdd);
             } else if (itemMeta instanceof PotionMeta potionMeta) {
                 if (potionMeta.hasCustomEffects()) {
-                    Map<PotionEffectType, String> potionEffectValueMap = new HashMap<>();
+                    Map<String, String> potionEffectValueMap = new HashMap<>();
                     for (PotionEffect effect : potionMeta.getCustomEffects()) {
                         StringBuilder builder = new StringBuilder();
                         builder.append(effect.getAmplifier());
                         builder.append(" ; ");
                         builder.append(effect.getDuration());
-                        potionEffectValueMap.put(effect.getType(), builder.toString());
+                        potionEffectValueMap.put(effect.toString().toUpperCase(Locale.ROOT), builder.toString());
                     }
                     configurationSection.set("effects", potionEffectValueMap);
                 }
@@ -109,7 +112,10 @@ public class BetterItemConfig {
                 if (bookMeta.hasAuthor()) configurationSection.set("book-info.author", bookMeta.getAuthor().replace('§', '&'));
                 if (bookMeta.hasPages()) {
                     List<String> pages = new ArrayList<>();
-                    bookMeta.getPages().forEach(page -> pages.add(page.replace('§', '&')));
+                    for (String compound : itemNBT.getStringList("pages")) {
+                        // System.out.println(compound);
+                        pages.add(Format.formatBookPage(compound));
+                    }
                     configurationSection.set("book-info.pages", pages);
                 }
                 if (bookMeta.hasGeneration()) configurationSection.set("book-info.generation", bookMeta.getGeneration().toString());
@@ -165,9 +171,11 @@ public class BetterItemConfig {
             builder.lore(loreList);
         }
         if (itemMap.containsKey("effects")) {
-            if (itemMap.get("effects") instanceof ConfigurationSection) {
+            if (section.isConfigurationSection("effects")) {
                 List<PotionEffect> potionEffects = new ArrayList<>();
-                for (Map.Entry entry : ((Map<String, String>) itemMap.get("effects")).entrySet()) {
+                for (Map.Entry entry : ((MemorySection) itemMap.get("effects")).getValues(true).entrySet()) {
+                    // System.out.println("key = " + entry.getKey() + " --- value = " + entry.getValue());
+                    // System.out.println("dur = " + Integer.valueOf(Arrays.stream(entry.getValue().toString().split(";")).toList().get(1) + "amp = " + Integer.valueOf(Arrays.stream(entry.getValue().toString().split(";")).toList().get(0))));
                     potionEffects.add(new PotionEffect(
                             PotionEffectType.getByName(((String) entry.getKey()).toUpperCase(Locale.ROOT)),
                             Integer.valueOf(Arrays.stream(entry.getValue().toString().split(";")).toList().get(1)),
@@ -207,7 +215,9 @@ public class BetterItemConfig {
             if (bookSection.contains("author")) builder.author(bookSection.getString("author"));
             if (bookSection.contains("generation")) builder.generation(BookMeta.Generation.valueOf(bookSection.getString("generation")));
             if (bookSection.contains("title")) builder.title(bookSection.getString("title"));
-            if (bookSection.contains("pages")) builder.pages(bookSection.getStringList("pages"));
+            if (bookSection.contains("pages")) {
+                builder.pages(bookSection.getStringList("pages"));
+            }
         }
 
 

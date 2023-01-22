@@ -9,6 +9,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +33,10 @@ public class ItemBuilder {
 
     private Map<String, Object> nbtToAdd = new HashMap<>();
 
+    public ItemBuilder() {
+        this(Material.AIR, 1);
+    }
+
     public ItemBuilder(Material material) {
         this(material, 1);
     }
@@ -39,6 +44,20 @@ public class ItemBuilder {
     public ItemBuilder(Material material, int amount) {
         this.item = new ItemStack(material, amount);
         this.meta = this.item.getItemMeta();
+    }
+
+    public static ItemBuilder modifyItem(ItemStack stack) {
+        ItemBuilder builder = new ItemBuilder();
+        builder.item = stack;
+        builder.meta = stack.getItemMeta();
+
+        return builder;
+    }
+
+    public ItemBuilder material(Material material) {
+        this.item.setType(material);
+
+        return this;
     }
 
     public ItemBuilder amount(int amount) {
@@ -124,6 +143,12 @@ public class ItemBuilder {
     public ItemBuilder potionEffects(List<PotionEffect> potionEffectList) {
         if (!(this.meta instanceof PotionMeta potionMeta)) return this;
         for (PotionEffect effect : potionEffectList) potionMeta.addCustomEffect(effect, true);
+        return this;
+    }
+
+    public ItemBuilder potionEffect(PotionEffect effect) {
+        if (!(this.meta instanceof PotionMeta potionMeta)) return this;
+        potionMeta.addCustomEffect(effect, true);
         return this;
     }
 

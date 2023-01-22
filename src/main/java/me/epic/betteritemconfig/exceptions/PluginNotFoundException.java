@@ -1,4 +1,4 @@
-package me.epic.betteritemconfig;
+package me.epic.betteritemconfig.exceptions;
 
 public class PluginNotFoundException extends RuntimeException {
 
