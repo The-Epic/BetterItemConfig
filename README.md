@@ -1,66 +1,98 @@
 # BetterItemConfig
 
-Default formatting specifications provided on the [wiki](https://github.com/The-Epic/BetterItemConfig/wiki)
 
-## Importing BetterItemConfig
+## Maven
 
-### Maven
+### Repository
 
 ```xml
-<project>
-    <repositories>
-        <!-- The artifact is present in both repositories. You can declare both or just one -->
-    
-        <repository>
-            <id>jeff-media-community</id>
-            <url>https://hub.jeff-media.com/nexus/repository/jeff-media-community/</url>
-        </repository>
-    
-        <repository>
-            <id>maven-dominick-sh-snapshots</id>
-            <name>Dominick's Reposilite</name>
-            <url>https://maven.dominick.sh/snapshots</url>
-        </repository>
-    </repositories>
+<repository>
+    <id>jeff-media-community</id>
+    <url>https://hub.jeff-media.com/nexus/repository/jeff-media-community/</url>
+</repository>
+```
+OR
+```xml
+<repository>
+    <id>maven-dominick-sh-snapshots</id>
+    <url>https://maven.dominick.sh/snapshots/</url>
+    <!--> Releases can be found on <url>https://maven.dominick.sh/releases/</url> -->
+</repository>
+```
+<ins>**THE PROJECT IS FOUND IN BOTH REPOSITORIES, ONLY ONE IS NEEDED!**</ins>
 
-    <dependencies>
-        <dependency>
-            <groupId>me.epic</groupId>
-            <artifactId>BetterItemConfig</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
-                <configuration>
-                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                    <relocations>
-                        <relocation>
-                            <pattern>me.epic.betteritemconfig</pattern>
-                            <shadedPattern>[YOUR PACKAGE HERE].betteritemconfig</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-</project>
+### Dependency
+
+```xml
+<dependency>
+    <groupId>me.epic</groupId>
+    <artifactId>BetterItemConfig</artifactId>
+    <version>VERSION</version>
+    <scope>compile</scope>
+</dependency>
+```
+Latest Version: ![Latest Version](https://img.shields.io/maven-metadata/v?color=0a7bbc&metadataUrl=https%3A%2F%2Fhub.jeff-media.com%2Fnexus%2Frepository%2Fjeff-media-community%2Fme%252Fepic%252FBetterItemConfig%252Fmaven-metadata.xml)
+
+### Relocating & Shading
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.4.1</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <relocations>
+                    <relocation>
+                        <pattern>me.epic.betteritemconfig</pattern>
+                        <shadedPattern>YOUR.PACKAGE.betteritemconfig</shadedPattern>
+                    </relocation>
+                </relocations>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+> Make sure to update `YOUR.PACKAGE` within the relocation plugin configuration.
+
+## Gradle (Groovy) 
+
+### Repository 
+
+```groovy
+repositories {
+    maven {
+        url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-community'
+    }
+}
+```
+OR
+```groovy {
+repositories {
+    maven {
+        url = 'https://maven.dominick.sh/snapshots/'
+        // Releases can be found on 'https://maven.dominick.sh/releases/'
+    }
+}
 ```
 
-> Make sure to update [YOUR PACKAGE HERE] within the relocation plugin configuration.
+### Dependency
+```groovy
+dependencies {
+    implementation 'me.epic:BetterItemConfig:VERSION'
+}
+```
+Latest Version: Latest Version: ![Latest Version](https://img.shields.io/maven-metadata/v?color=0a7bbc&metadataUrl=https%3A%2F%2Fhub.jeff-media.com%2Fnexus%2Frepository%2Fjeff-media-community%2Fme%252Fepic%252FBetterItemConfig%252Fmaven-metadata.xml)
+
+
 
 ## Using BetterItemConfig
 
