@@ -48,6 +48,19 @@ publishing {
 
                     url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-community/'
                 }
+                maven {
+                    credentials {
+                        credentials {
+                            username = "$itzdlgRepoUser"
+                            password = "$itzdlgRepoPass"
+                        }
+                    }
+                    if (project.version.endsWith('-SNAPSHOT')) {
+                        url = 'https://maven.dominick.sh/snapshots'
+                    } else {
+                        url = 'https://maven.dominick.sh/releases'
+                    }
+                }
             }
         }
 
