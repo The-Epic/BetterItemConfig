@@ -44,10 +44,6 @@ Default formatting specifications provided on the [wiki](https://github.com/The-
                             <pattern>me.epic.betteritemconfig</pattern>
                             <shadedPattern>[YOUR PACKAGE HERE].betteritemconfig</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>de.tr7zw.changeme.nbtapi</pattern>
-                            <shadedPattern>[YOUR PACKAGE HERE].betteritemconfig.nbtapi</shadedPattern>
-                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
