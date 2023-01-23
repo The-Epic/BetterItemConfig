@@ -194,10 +194,13 @@ public class ItemBuilder {
     public ItemStack build() {
         ItemStack finalItem = this.item;
         finalItem.setItemMeta(this.meta);
-        NBTItem nbtItem = new  NBTItem(finalItem);
-        for (Map.Entry entry : nbtToAdd.entrySet()) {
-            nbtItem.setString((String) entry.getKey(), (String) entry.getValue());
+        if (!finalItem.getType().isAir() || finalItem.getType() != null || finalItem.getAmount() != 0) {
+            NBTItem nbtItem = new NBTItem(finalItem);
+            for (Map.Entry entry : nbtToAdd.entrySet()) {
+                nbtItem.setString((String) entry.getKey(), (String) entry.getValue());
+            }
+            return nbtItem.getItem();
         }
-        return nbtItem.getItem();
+        return finalItem;
     }
 }

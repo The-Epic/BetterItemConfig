@@ -1,20 +1,25 @@
-package me.epic.betteritemconfig.handlers;
+package me.epic.betteritemconfig.handlers.impl;
 
 import me.epic.betteritemconfig.ItemBuilder;
+import me.epic.betteritemconfig.handlers.ItemHandler;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-public class NameHandler implements ItemHandler{
+public class LoreHandler implements ItemHandler {
+
     @Override
     public ItemStack process(ItemStack stack, ConfigurationSection section) {
         ItemBuilder builder = ItemBuilder.modifyItem(stack);
-        if (section.contains("name")) builder.name(section.getString("name"));
+        if (section.contains("lore")) builder.lore(section.getStringList("lore"));
 
         return builder.build();
     }
 
     @Override
     public void write(ItemStack item, ConfigurationSection section) {
-        if (item.getItemMeta().hasDisplayName()) section.set("name", item.getItemMeta().getDisplayName().replace('§', '&'));
+        if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
+            section.set("lore", item.getItemMeta().getLore());
+        }
     }
 }

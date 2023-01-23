@@ -1,6 +1,7 @@
 package me.epic.betteritemconfig;
 
 import me.epic.betteritemconfig.handlers.*;
+import me.epic.betteritemconfig.handlers.impl.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +15,7 @@ public class ItemFactory {
             .register(new LoreHandler())
             .register(new CustomEffectHandler())
             .register(new NameHandler())
+            .register(new EnchantHandler())
             .build();
 
     protected final BaseProcessor baseProcessor;

@@ -1,6 +1,8 @@
-package me.epic.betteritemconfig.handlers;
+package me.epic.betteritemconfig.handlers.impl;
 
 import me.epic.betteritemconfig.ItemBuilder;
+import me.epic.betteritemconfig.SectionUtils;
+import me.epic.betteritemconfig.handlers.ItemHandler;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -18,24 +20,27 @@ public class CustomEffectHandler implements ItemHandler {
         ItemBuilder builder = ItemBuilder.modifyItem(stack);
         if (section.isConfigurationSection("effects")) {
             List<PotionEffect> effectList = new ArrayList<>();
-            ConfigurationSection effectSection = section.getConfigurationSection("effects");
-            for (String key : effectSection.getKeys(false)) {
-                ConfigurationSection effect = effectSection.getConfigurationSection(key);
-                boolean ambient = effect.contains("ambient") ? effectSection.getBoolean("ambient") : true;
-                boolean particles = effect.contains("particles") ? effectSection.getBoolean("particles") : true;
-                boolean icon = effect.contains("icon") ? effectSection.getBoolean("icon") : true;
-                int duration = effect.getInt("duration");
-                int amplifier = effect.getInt("amplifier");
-                PotionEffectType effectType = PotionEffectType.getByKey(NamespacedKey.minecraft(key));
-                effectList.add(new PotionEffect(effectType, duration, amplifier, ambient, particles, icon));
+            ConfigurationSection effectSection = SectionUtils.first(section, "effect", "effects");
+            if (effectSection != null ) {
+                for (String key : effectSection.getKeys(false)) {
+                    ConfigurationSection effect = effectSection.getConfigurationSection(key);
+                    boolean ambient = effect.contains("ambient") ? effectSection.getBoolean("ambient") : true;
+                    boolean particles = effect.contains("particles") ? effectSection.getBoolean("particles") : true;
+                    boolean icon = effect.contains("icon") ? effectSection.getBoolean("icon") : true;
+                    int duration = effect.getInt("duration") * 20;
+                    int amplifier = effect.getInt("amplifier") - 1;
+                    PotionEffectType effectType = PotionEffectType.getByKey(NamespacedKey.minecraft(key));
+                    effectList.add(new PotionEffect(effectType, duration, amplifier, ambient, particles, icon));
+                }
+                builder.potionEffects(effectList);
             }
-            builder.potionEffects(effectList);
         }
         return builder.build();
     }
 
     @Override
     public void write(ItemStack item, ConfigurationSection section) {
+        if (!item.hasItemMeta()) return;
         ItemMeta meta = item.getItemMeta();
         if (meta instanceof PotionMeta potionMeta) {
             if (potionMeta.hasCustomEffects()) {
@@ -45,8 +50,8 @@ public class CustomEffectHandler implements ItemHandler {
                     if (!customEffect.isAmbient()) customEffectSection.set("ambient", false);
                     if (!customEffect.hasParticles()) customEffectSection.set("particles", false);
                     if (!customEffect.hasIcon()) customEffectSection.set("icon", false);
-                    customEffectSection.set("amplifier", customEffect.getAmplifier());
-                    customEffectSection.set("duration", customEffect.getDuration());
+                    customEffectSection.set("amplifier", customEffect.getAmplifier() + 1);
+                    customEffectSection.set("duration", customEffect.getDuration() / 20);
                 }
             }
         }
