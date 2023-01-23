@@ -21,7 +21,7 @@ public class EnchantHandler implements ItemHandler {
         if (enchantSection != null) {
             Map<Enchantment, Integer> enchantmentLevelMap = new HashMap<>();
             for (String key : enchantSection.getKeys(false)) {
-                enchantmentLevelMap.put(Enchantment.getByKey(NamespacedKey.minecraft(key)), enchantSection.getInt("key"));
+                enchantmentLevelMap.put(Enchantment.getByKey(NamespacedKey.minecraft(key)), enchantSection.getInt(key));
             }
             builder.enchantments(enchantmentLevelMap);
         }

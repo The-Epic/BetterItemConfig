@@ -12,10 +12,8 @@ import java.util.Objects;
 public class ItemStackHandler implements BaseProcessor {
     @Override
     public ItemStack read(ConfigurationSection section) {
-        System.out.println(section.getKeys(false));
         ItemBuilder builder = new ItemBuilder();
         if (section.isSet("type")) {
-            System.out.println(section.getString("type"));
             builder.material(Objects.requireNonNull(Material.getMaterial(section.getString("type").toUpperCase(Locale.ROOT)), "The specified Material is not valid"));
         } else {
             throw new IllegalArgumentException("Type parameter is not set, ItemStack is not valid");
