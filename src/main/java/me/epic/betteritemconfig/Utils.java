@@ -1,7 +1,10 @@
 package me.epic.betteritemconfig;
 
 import net.minecraft.nbt.NBTBase;
-import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -12,10 +15,15 @@ import java.util.Map;
 
 public class Utils {
 
-    public static Map<String, NBTBase> getCustomDataTags(PersistentDataContainer container) throws IllegalAccessException, NoSuchFieldException {
-        Field customDataTagsField = container.getClass().getDeclaredField("customDataTags");
-        customDataTagsField.setAccessible(true);
-        return (Map<String, NBTBase>) customDataTagsField.get(container);
+    public static Map<String, NBTBase> getCustomDataTags(PersistentDataContainer container) {
+        try {
+            Field customDataTagsField = container.getClass().getDeclaredField("customDataTags");
+            customDataTagsField.setAccessible(true);
+            return (Map<String, NBTBase>) customDataTagsField.get(container);
+        } catch (IllegalAccessException | NoSuchFieldException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public static PersistentDataType getPDT(Object object) {
@@ -34,13 +42,7 @@ public class Utils {
         } else if (object instanceof Short) {
             return PersistentDataType.SHORT;
         } else if (object instanceof Array) {
-            if (object instanceof Byte[])
-                return PersistentDataType.BYTE;
-            else if (object instanceof Integer[])
-                return PersistentDataType.INTEGER_ARRAY;
-            else if (object instanceof Long[])
-                return PersistentDataType.LONG_ARRAY;
-            else return PersistentDataType.BYTE_ARRAY;
+            return PersistentDataType.BYTE_ARRAY;
         } else {
             return PersistentDataType.BYTE_ARRAY;
         }
@@ -71,5 +73,11 @@ public class Utils {
             }
         }
 
+    }
+
+    public static String getMetaColor(ItemMeta meta) {
+        Color color = meta instanceof PotionMeta potionMeta ? potionMeta.getColor() : meta instanceof LeatherArmorMeta leatherArmorMeta ? leatherArmorMeta.getColor() : null;
+        String hex = "#" + Integer.toHexString(color.asRGB()).substring(2);
+        return hex;
     }
 }

@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
 import me.epic.betteritemconfig.exceptions.PluginNotFoundException;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.nbt.NBTBase;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -22,42 +23,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "deprecation"})
-@Deprecated(forRemoval = true)
 public class BetterItemConfig {
 
-    @Getter
-    public static boolean useMiniMessage = false;
 
-    /**
-     * Initialize the library
-     *
-     * @param useMiniMessage decides if to use minimessage support, you must provide the library
-     */
-    public static void init(boolean useMiniMessage) {
-        BetterItemConfig.useMiniMessage = useMiniMessage;
-    }
-
-    /**
-     * Save an item stack to specific path in ConfigurationFile
-     *
-     * @param configurationFile the file to add to
-     * @param path to save at
-     * @param toSerialize to save
-     */
-    public static void toConfig(FileConfiguration configurationFile, String path, ItemStack toSerialize) {
-        ConfigurationSection section = configurationFile.createSection(path);
-        toConfig(section, toSerialize);
-    }
-
-    /**
-     * Save an item to specific ConfigurationSection
-     *
-     * @param configurationSection the section to save in
-     * @param toSerialize to save
-     */
     public static void toConfig(ConfigurationSection configurationSection, ItemStack toSerialize) {
         NBTItem itemNBT = new NBTItem(toSerialize);
         configurationSection.set("type", toSerialize.getType().toString());
@@ -114,7 +86,7 @@ public class BetterItemConfig {
                     List<String> pages = new ArrayList<>();
                     for (String compound : itemNBT.getStringList("pages")) {
                         // System.out.println(compound);
-                        pages.add(Format.formatBookPage(compound));
+                        //pages.add(Format.formatBookPage(compound));
                     }
                     configurationSection.set("book-info.pages", pages);
                 }
@@ -123,11 +95,7 @@ public class BetterItemConfig {
             if (!itemMeta.getPersistentDataContainer().getKeys().isEmpty()) {
                 PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
                 Map<String, NBTBase> stringNBTBaseMap = new HashMap<>();
-                try {
-                    stringNBTBaseMap.putAll(Utils.getCustomDataTags(pdc));
-                } catch (IllegalAccessException | NoSuchFieldException ex) {
-                    ex.printStackTrace();
-                }
+                stringNBTBaseMap.putAll(Utils.getCustomDataTags(pdc));
                 stringNBTBaseMap.forEach((key, value) -> {
                     configurationSection.set("pdc." + key + ".type", value.getClass().getSimpleName().toUpperCase(Locale.ROOT).replace("NBTTAG", ""));
                     configurationSection.set("pdc." + key + ".value", Utils.convertToCorrectType(value.toString(), value.getClass().getSimpleName().replace("NBTTag", "")));
@@ -137,23 +105,10 @@ public class BetterItemConfig {
         }
     }
 
-    /**
-     * Gets an ItemStack from ConfigurationFile
-     *
-     * @param configuration File to get from
-     * @param path to get the ItemStack
-     * @return ItemStack from config
-     */
     public static ItemStack fromConfig(FileConfiguration configuration, String path) {
         return fromConfig(configuration.getConfigurationSection(path));
     }
 
-    /**
-     * Get an ItemStack from ConfigurationFile
-     *
-     * @param section to get from
-     * @return ItemStack from section
-     */
     public static ItemStack fromConfig(ConfigurationSection section) {
         Map<String, Object> itemMap = section.getValues(true);
         ItemBuilder builder = new ItemBuilder(Material.getMaterial(itemMap.get("type").toString().toUpperCase(Locale.ROOT)));

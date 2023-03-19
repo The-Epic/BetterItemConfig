@@ -21,8 +21,8 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot:1.18-R0.1-SNAPSHOT'
-    compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.11.0'
-    compileOnly group: 'net.kyori', name: 'adventure-text-serializer-legacy', version: '4.11.0'
+    implementation group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.11.0'
+    implementation group: 'net.kyori', name: 'adventure-text-serializer-legacy', version: '4.11.0'
     compileOnly "net.kyori:adventure-text-serializer-gson:4.12.0"
     implementation("de.tr7zw:item-nbt-api:2.11.1")
 }
@@ -41,25 +41,12 @@ publishing {
                 maven {
                     credentials {
                         credentials {
-                            username = "$jeffMediaUser"
-                            password = "$jeffMediaPass"
+                            username = "epic"
+                            password = System.getenv("EPICREPO_SECRET")
                         }
                     }
 
-                    url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-community/'
-                }
-                maven {
-                    credentials {
-                        credentials {
-                            username = "$itzdlgRepoUser"
-                            password = "$itzdlgRepoPass"
-                        }
-                    }
-                    if (project.version.endsWith('-SNAPSHOT')) {
-                        url = 'https://maven.dominick.sh/snapshots'
-                    } else {
-                        url = 'https://maven.dominick.sh/releases'
-                    }
+                    url = 'https://repo.epicebic.xyz/public'
                 }
             }
         }

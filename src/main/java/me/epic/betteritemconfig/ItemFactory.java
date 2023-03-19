@@ -16,6 +16,8 @@ public class ItemFactory {
             .register(new CustomEffectHandler())
             .register(new NameHandler())
             .register(new EnchantHandler())
+            .register(new BaseEffectHandler())
+            .register(new PersistentDataHandler())
             .build();
 
     protected final BaseProcessor baseProcessor;
