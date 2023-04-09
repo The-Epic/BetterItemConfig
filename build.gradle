@@ -1,14 +1,17 @@
 plugins {
     id 'java'
     id "com.github.johnrengelman.shadow" version "7.1.0"
-    id "io.freefair.lombok" version "6.6-rc1"
-    id 'maven-publish'
+    id "io.freefair.lombok" version "6.6.3"
 }
 
-compileJava.options.encoding = 'UTF-8'
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+javadoc.options.encoding = 'UTF-8'
+javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
 group = 'me.epic'
-version = '2.0.0-SNAPSHOT'
+version = '2.0.1-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -32,24 +35,4 @@ shadowJar{
     relocate("de.tr7zw.changeme.nbtapi", "me.epic.betteritemconfig.nbtapi")
 }
 
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-
-            repositories {
-                maven {
-                    credentials {
-                        credentials {
-                            username = "epic"
-                            password = System.getenv("EPICREPO_SECRET")
-                        }
-                    }
-
-                    url = 'https://repo.epicebic.xyz/public'
-                }
-            }
-        }
-
-    }
-}
+apply from: "https://gradle.epicebic.xyz/publishing.gradle"

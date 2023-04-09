@@ -184,12 +184,12 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder pages(List<String> pages) {
-        if (!(this.meta instanceof BookMeta bookMeta)) return this;
-        pages.forEach(page -> bookMeta.addPage(Format.formatBookPage(page)));
-
-        return this;
-    }
+//    public ItemBuilder pages(List<String> pages) {
+//        if (!(this.meta instanceof BookMeta bookMeta)) return this;
+//        pages.forEach(page -> bookMeta.addPage(Format.formatBookPage(page)));
+//
+//        return this;
+//    }
 
     public ItemStack build() {
         ItemStack finalItem = this.item;

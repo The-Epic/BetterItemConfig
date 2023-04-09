@@ -15,6 +15,7 @@ public class BaseEffectHandler implements ItemHandler {
     public ItemStack process(ItemStack stack, ConfigurationSection section) {
         ItemBuilder builder = ItemBuilder.modifyItem(stack);
         ConfigurationSection effectSection = SectionUtils.first(section, "effect", "effects");
+        if (effectSection == null) return builder.build();
         if (effectSection.getKeys(false).isEmpty()) return builder.build();
         for (String key : effectSection.getKeys(false)) {
             if (!effectSection.isConfigurationSection(key)) continue;

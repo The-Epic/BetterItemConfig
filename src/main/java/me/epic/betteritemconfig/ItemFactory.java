@@ -18,6 +18,9 @@ public class ItemFactory {
             .register(new EnchantHandler())
             .register(new BaseEffectHandler())
             .register(new PersistentDataHandler())
+            .register(new LeatherArmorHandler())
+            .register(new ModelDataHandler())
+            .register(new ItemFlagHandler())
             .build();
 
     protected final BaseProcessor baseProcessor;

@@ -171,7 +171,7 @@ public class BetterItemConfig {
             if (bookSection.contains("generation")) builder.generation(BookMeta.Generation.valueOf(bookSection.getString("generation")));
             if (bookSection.contains("title")) builder.title(bookSection.getString("title"));
             if (bookSection.contains("pages")) {
-                builder.pages(bookSection.getStringList("pages"));
+                //builder.pages(bookSection.getStringList("pages"));
             }
         }
 
