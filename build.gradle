@@ -11,7 +11,7 @@ javadoc.options.encoding = 'UTF-8'
 javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
 group = 'me.epic'
-version = '2.0.1-SNAPSHOT'
+version = '2.0.2-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -35,4 +35,4 @@ shadowJar{
     relocate("de.tr7zw.changeme.nbtapi", "me.epic.betteritemconfig.nbtapi")
 }
 
-apply from: "https://gradle.epicebic.xyz/publishing.gradle"
+apply from: "https://raw.githubusercontent.com/The-Epic/gradle-scripts/main/publishing.gradle"
