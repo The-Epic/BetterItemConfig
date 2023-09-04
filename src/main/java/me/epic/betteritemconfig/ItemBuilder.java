@@ -1,28 +1,27 @@
 package me.epic.betteritemconfig;
 
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import net.minecraft.nbt.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
-import java.awt.print.Book;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 /**
  * For internal use only
@@ -32,6 +31,24 @@ public class ItemBuilder {
     private ItemMeta meta;
 
     private Map<String, Object> nbtToAdd = new HashMap<>();
+
+    private static Class<?> CRAFT_PERSISTENT_DATA_CONTAINER;
+    private static Method CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL;
+
+    private static Class<?> CRAFT_ITEM_META_CLASS;
+    private static Field CRAFT_ITEM_META_CLASS_CONTAINER_FIELD;
+
+    static {
+        try {
+            CRAFT_PERSISTENT_DATA_CONTAINER = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".persistence.CraftPersistentDataContainer");
+            CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL = CRAFT_PERSISTENT_DATA_CONTAINER.getMethod("putAll", NBTTagCompound.class);
+
+            CRAFT_ITEM_META_CLASS = new ItemStack(Material.BARRIER).getItemMeta().getClass();
+            CRAFT_ITEM_META_CLASS_CONTAINER_FIELD = CRAFT_ITEM_META_CLASS.getDeclaredField("persistentDataContainer");
+        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public ItemBuilder() {
         this(Material.AIR, 1);
@@ -101,18 +118,16 @@ public class ItemBuilder {
     public ItemBuilder skullTexture(String texture) {
         if (!(this.meta instanceof SkullMeta skullMeta)) return this;
 
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "");
-        PropertyMap propertyMap = gameProfile.getProperties();
-        propertyMap.put("textures", new Property("textures", texture));
-
+        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes(texture.getBytes()));
+        PlayerTextures textures = profile.getTextures();
         try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, gameProfile);
-            profileField.setAccessible(false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            textures.setSkin(new URL("http://textures.minecraft.net/texture/" + texture));
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        profile.setTextures(textures);
+        skullMeta.setOwnerProfile(profile);
 
         return this;
     }
@@ -157,8 +172,19 @@ public class ItemBuilder {
         return this;
     }
 
+    @Deprecated
     public <T, Z> ItemBuilder persistentData(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
         this.meta.getPersistentDataContainer().set(key, type, value);
+
+        return this;
+    }
+
+    public ItemBuilder persistentData(NBTTagCompound nbtTagCompound) {
+        try {
+            CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL.invoke(CRAFT_ITEM_META_CLASS_CONTAINER_FIELD.get(CRAFT_ITEM_META_CLASS.cast(this.meta)), nbtTagCompound);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
 
         return this;
     }
@@ -191,6 +217,10 @@ public class ItemBuilder {
 //        return this;
 //    }
 
+    public ItemMeta getItemMeta() {
+        return this.meta;
+    }
+
     public ItemStack build() {
         ItemStack finalItem = this.item;
         finalItem.setItemMeta(this.meta);
@@ -202,5 +232,9 @@ public class ItemBuilder {
             return nbtItem.getItem();
         }
         return finalItem;
+    }
+
+    private static String getServerVersion() {
+        return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
     }
 }

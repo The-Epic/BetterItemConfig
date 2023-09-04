@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
-import me.epic.betteritemconfig.exceptions.PluginNotFoundException;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.nbt.NBTBase;
 import org.bukkit.Bukkit;
@@ -157,7 +156,7 @@ public class BetterItemConfig {
                 ConfigurationSection pdcInfoSection = section.getConfigurationSection("pdc." + value);
                 Plugin plugin = Bukkit.getPluginManager().getPlugin(Arrays.stream(value.split(":")).toList().get(0));
                 if (plugin == null) {
-                    throw new PluginNotFoundException("Plugin: :\"" + Arrays.stream(value.split(":")).toList().get(0) + "\" was not Found");
+                    //throw new PluginNotFoundException("Plugin: :\"" + Arrays.stream(value.split(":")).toList().get(0) + "\" was not Found");
                 }
                 NamespacedKey key = new NamespacedKey(plugin, Arrays.stream(value.split(":")).toList().get(1));
                 builder.persistentData(key,
