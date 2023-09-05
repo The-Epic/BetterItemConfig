@@ -2,7 +2,6 @@ package me.epic.betteritemconfig;
 
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -11,14 +10,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.persistence.PersistentDataAdapterContext;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -32,23 +30,19 @@ public class ItemBuilder {
 
     private Map<String, Object> nbtToAdd = new HashMap<>();
 
-    private static Class<?> CRAFT_PERSISTENT_DATA_CONTAINER;
-    private static Method CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL;
-
-    private static Class<?> CRAFT_ITEM_META_CLASS;
-    private static Field CRAFT_ITEM_META_CLASS_CONTAINER_FIELD;
-
-    static {
-        try {
-            CRAFT_PERSISTENT_DATA_CONTAINER = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".persistence.CraftPersistentDataContainer");
-            CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL = CRAFT_PERSISTENT_DATA_CONTAINER.getMethod("putAll", NBTTagCompound.class);
-
-            CRAFT_ITEM_META_CLASS = new ItemStack(Material.BARRIER).getItemMeta().getClass();
-            CRAFT_ITEM_META_CLASS_CONTAINER_FIELD = CRAFT_ITEM_META_CLASS.getDeclaredField("persistentDataContainer");
-        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException ex) {
-            ex.printStackTrace();
-        }
-    }
+    private static final PersistentDataType<?, ?>[] PRIMITIVE_DATA_TYPES = new PersistentDataType<?, ?>[]{
+            PersistentDataType.BYTE,
+            PersistentDataType.SHORT,
+            PersistentDataType.INTEGER,
+            PersistentDataType.LONG,
+            PersistentDataType.FLOAT,
+            PersistentDataType.DOUBLE,
+            PersistentDataType.STRING,
+            PersistentDataType.BYTE_ARRAY,
+            PersistentDataType.INTEGER_ARRAY,
+            PersistentDataType.LONG_ARRAY,
+            PersistentDataType.TAG_CONTAINER_ARRAY,
+            PersistentDataType.TAG_CONTAINER};
 
     public ItemBuilder() {
         this(Material.AIR, 1);
@@ -179,11 +173,14 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder persistentData(NBTTagCompound nbtTagCompound) {
-        try {
-            CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL.invoke(CRAFT_ITEM_META_CLASS_CONTAINER_FIELD.get(CRAFT_ITEM_META_CLASS.cast(this.meta)), nbtTagCompound);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+    public ItemBuilder persistentData(PersistentDataContainer pdc) {
+        PersistentDataContainer newContainer = this.meta.getPersistentDataContainer();
+        for (NamespacedKey key : pdc.getKeys()) {
+            PersistentDataType type = getDataType(pdc, key);
+            if (type != null) {
+                continue;
+            }
+            newContainer.set(key, type, pdc.get(key, type));
         }
 
         return this;
@@ -217,14 +214,14 @@ public class ItemBuilder {
 //        return this;
 //    }
 
-    public ItemMeta getItemMeta() {
-        return this.meta;
+    public PersistentDataAdapterContext getPDCAdapterContext() {
+        return this.meta.getPersistentDataContainer().getAdapterContext();
     }
 
     public ItemStack build() {
         ItemStack finalItem = this.item;
         finalItem.setItemMeta(this.meta);
-        if (!finalItem.getType().isAir() || finalItem.getType() != null || finalItem.getAmount() != 0) {
+        if (!finalItem.getType().isAir() && finalItem.getAmount() != 0) {
             NBTItem nbtItem = new NBTItem(finalItem);
             for (Map.Entry entry : nbtToAdd.entrySet()) {
                 nbtItem.setString((String) entry.getKey(), (String) entry.getValue());
@@ -234,7 +231,10 @@ public class ItemBuilder {
         return finalItem;
     }
 
-    private static String getServerVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+    private static PersistentDataType<?, ?> getDataType(PersistentDataContainer pdc, NamespacedKey key) {
+        for (PersistentDataType<?, ?> dataType : PRIMITIVE_DATA_TYPES) {
+            if (pdc.has(key, dataType)) return dataType;
+        }
+        return null;
     }
 }
