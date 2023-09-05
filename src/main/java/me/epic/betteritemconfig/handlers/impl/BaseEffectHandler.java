@@ -1,6 +1,5 @@
 package me.epic.betteritemconfig.handlers.impl;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import me.epic.betteritemconfig.ItemBuilder;
 import me.epic.betteritemconfig.SectionUtils;
 import me.epic.betteritemconfig.Utils;

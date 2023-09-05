@@ -1,7 +1,5 @@
 package me.epic.betteritemconfig;
 
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -28,8 +26,6 @@ import java.util.*;
 public class ItemBuilder {
     private ItemStack item;
     private ItemMeta meta;
-
-    private Map<String, Object> nbtToAdd = new HashMap<>();
 
     private static final PersistentDataType<?, ?>[] PRIMITIVE_DATA_TYPES = new PersistentDataType<?, ?>[]{
             PersistentDataType.BYTE,
@@ -224,13 +220,6 @@ public class ItemBuilder {
     public ItemStack build() {
         ItemStack finalItem = this.item;
         finalItem.setItemMeta(this.meta);
-        if (!finalItem.getType().isAir() && finalItem.getAmount() != 0) {
-            NBTItem nbtItem = new NBTItem(finalItem);
-            for (Map.Entry entry : nbtToAdd.entrySet()) {
-                nbtItem.setString((String) entry.getKey(), (String) entry.getValue());
-            }
-            return nbtItem.getItem();
-        }
         return finalItem;
     }
 
