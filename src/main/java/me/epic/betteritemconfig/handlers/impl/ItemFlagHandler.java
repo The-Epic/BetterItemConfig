@@ -12,12 +12,11 @@ import java.util.List;
 
 public class ItemFlagHandler implements ItemHandler {
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
-        ItemBuilder builder = ItemBuilder.modifyItem(stack);
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
         if (section.isList("itemflags")) {
             builder.flags(section.getStringList("itemflags").stream().map(ItemFlag::valueOf).toList());
         }
-        return builder.build();
+        return builder;
     }
 
     @Override

@@ -8,13 +8,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ModelDataHandler implements ItemHandler {
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
         if (section.contains("model-data")) {
-            ItemBuilder builder = ItemBuilder.modifyItem(stack);
             builder.customModelData(section.getInt("model-data", 0));
-            return builder.build();
+            return builder;
         }
-        return stack;
+        return builder;
     }
 
     @Override

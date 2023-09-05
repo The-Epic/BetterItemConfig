@@ -17,8 +17,7 @@ import java.util.List;
 
 public class CustomEffectHandler implements ItemHandler {
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
-        ItemBuilder builder = ItemBuilder.modifyItem(stack);
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
         List<PotionEffect> effectList = new ArrayList<>();
         ConfigurationSection effectSection = SectionUtils.first(section, "effect", "effects");
         if (effectSection != null ) {
@@ -34,7 +33,7 @@ public class CustomEffectHandler implements ItemHandler {
             }
             builder.potionEffects(effectList);
         }
-        return builder.build();
+        return builder;
     }
 
     @Override

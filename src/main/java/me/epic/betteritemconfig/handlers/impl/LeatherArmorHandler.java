@@ -10,12 +10,11 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class LeatherArmorHandler implements ItemHandler {
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
-        if (!section.contains("dye")) return stack;
-        ItemBuilder builder = ItemBuilder.modifyItem(stack);
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
+        if (!section.contains("dye")) return builder;
         builder.colour(section.getString("dye"));
 
-        return builder.build();
+        return builder;
     }
 
     @Override

@@ -12,14 +12,13 @@ public class PersistentDataHandler implements ItemHandler {
 
 
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
         if (section.isConfigurationSection("pdc")) {
-            ItemBuilder builder = ItemBuilder.modifyItem(stack);
 
             builder.persistentData(PersistentDataSerializer.fromMapList(section.getMapList("pdc"), builder.getPDCAdapterContext()));
-            return builder.build();
+            return builder;
         }
-        return stack;
+        return builder;
     }
 
     @Override

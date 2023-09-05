@@ -14,17 +14,16 @@ import org.bukkit.potion.PotionType;
 public class BaseEffectHandler implements ItemHandler {
 
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
-        ItemBuilder builder = ItemBuilder.modifyItem(stack);
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
         ConfigurationSection effectSection = SectionUtils.first(section, "effect", "effects");
-        if (effectSection == null) return stack;
-        if (effectSection.getKeys(false).isEmpty()) return stack;
+        if (effectSection == null) return builder;
+        if (effectSection.getKeys(false).isEmpty()) return builder;
         String potionType = effectSection.getKeys(false).toArray(String[]::new)[0];
         ConfigurationSection effect = effectSection.getConfigurationSection(potionType);
 
         PotionData basePotionData = new PotionData(PotionType.valueOf(potionType), effect.getBoolean("extended", false), effect.getBoolean("upgraded", false));
         builder.basePotionEffect(basePotionData);
-        return builder.build();
+        return builder;
     }
 
     @Override

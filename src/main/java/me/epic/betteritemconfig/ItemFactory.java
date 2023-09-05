@@ -33,10 +33,10 @@ public class ItemFactory {
     }
 
     public ItemStack read(ConfigurationSection section) {
-        ItemStack initialItem = baseProcessor.read(section);
-        for (ItemHandler handler : handlers) initialItem = handler.process(initialItem, section);
+        ItemBuilder initialItemBuilder = ItemBuilder.modifyItem(baseProcessor.read(section));
+        for (ItemHandler handler : handlers) initialItemBuilder = handler.process(initialItemBuilder, section);
 
-        return initialItem;
+        return initialItemBuilder.build();
     }
 
     public void write(ItemStack itemStack, FileConfiguration fileConfiguration, String path) {

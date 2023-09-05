@@ -14,9 +14,8 @@ import java.util.Map;
 public class EnchantHandler implements ItemHandler {
 
     @Override
-    public ItemStack process(ItemStack stack, ConfigurationSection section) {
+    public ItemBuilder process(ItemBuilder builder, ConfigurationSection section) {
         ConfigurationSection enchantSection = SectionUtils.first(section, "enchant", "enchants", "enchantment", "enchantments");
-        ItemBuilder builder = ItemBuilder.modifyItem(stack);
         if (enchantSection != null) {
             Map<Enchantment, Integer> enchantmentLevelMap = new HashMap<>();
             for (String key : enchantSection.getKeys(false)) {
@@ -24,7 +23,7 @@ public class EnchantHandler implements ItemHandler {
             }
             builder.enchantments(enchantmentLevelMap);
         }
-        return builder.build();
+        return builder;
     }
 
     @Override

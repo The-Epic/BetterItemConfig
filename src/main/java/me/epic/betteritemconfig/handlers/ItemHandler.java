@@ -1,5 +1,6 @@
 package me.epic.betteritemconfig.handlers;
 
+import me.epic.betteritemconfig.ItemBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,6 +14,6 @@ public interface ItemHandler {
         return true;
     }
 
-    ItemStack process(ItemStack stack, ConfigurationSection section);
+    ItemBuilder process(ItemBuilder builder, ConfigurationSection section);
     void write(ItemStack item, ConfigurationSection section);
 }
