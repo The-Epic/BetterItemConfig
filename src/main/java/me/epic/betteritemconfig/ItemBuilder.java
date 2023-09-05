@@ -1,28 +1,25 @@
 package me.epic.betteritemconfig;
 
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.persistence.PersistentDataAdapterContext;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
-import java.awt.print.Book;
-import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 /**
  * For internal use only
@@ -32,6 +29,20 @@ public class ItemBuilder {
     private ItemMeta meta;
 
     private Map<String, Object> nbtToAdd = new HashMap<>();
+
+    private static final PersistentDataType<?, ?>[] PRIMITIVE_DATA_TYPES = new PersistentDataType<?, ?>[]{
+            PersistentDataType.BYTE,
+            PersistentDataType.SHORT,
+            PersistentDataType.INTEGER,
+            PersistentDataType.LONG,
+            PersistentDataType.FLOAT,
+            PersistentDataType.DOUBLE,
+            PersistentDataType.STRING,
+            PersistentDataType.BYTE_ARRAY,
+            PersistentDataType.INTEGER_ARRAY,
+            PersistentDataType.LONG_ARRAY,
+            PersistentDataType.TAG_CONTAINER_ARRAY,
+            PersistentDataType.TAG_CONTAINER};
 
     public ItemBuilder() {
         this(Material.AIR, 1);
@@ -101,18 +112,16 @@ public class ItemBuilder {
     public ItemBuilder skullTexture(String texture) {
         if (!(this.meta instanceof SkullMeta skullMeta)) return this;
 
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "");
-        PropertyMap propertyMap = gameProfile.getProperties();
-        propertyMap.put("textures", new Property("textures", texture));
-
+        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes(texture.getBytes()));
+        PlayerTextures textures = profile.getTextures();
         try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, gameProfile);
-            profileField.setAccessible(false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            textures.setSkin(new URL("http://textures.minecraft.net/texture/" + texture));
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        profile.setTextures(textures);
+        skullMeta.setOwnerProfile(profile);
 
         return this;
     }
@@ -157,8 +166,22 @@ public class ItemBuilder {
         return this;
     }
 
+    @Deprecated
     public <T, Z> ItemBuilder persistentData(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
         this.meta.getPersistentDataContainer().set(key, type, value);
+
+        return this;
+    }
+
+    public ItemBuilder persistentData(PersistentDataContainer pdc) {
+        PersistentDataContainer newContainer = this.meta.getPersistentDataContainer();
+        for (NamespacedKey key : pdc.getKeys()) {
+            PersistentDataType type = getDataType(pdc, key);
+            if (type != null) {
+                continue;
+            }
+            newContainer.set(key, type, pdc.get(key, type));
+        }
 
         return this;
     }
@@ -191,10 +214,14 @@ public class ItemBuilder {
 //        return this;
 //    }
 
+    public PersistentDataAdapterContext getPDCAdapterContext() {
+        return this.meta.getPersistentDataContainer().getAdapterContext();
+    }
+
     public ItemStack build() {
         ItemStack finalItem = this.item;
         finalItem.setItemMeta(this.meta);
-        if (!finalItem.getType().isAir() || finalItem.getType() != null || finalItem.getAmount() != 0) {
+        if (!finalItem.getType().isAir() && finalItem.getAmount() != 0) {
             NBTItem nbtItem = new NBTItem(finalItem);
             for (Map.Entry entry : nbtToAdd.entrySet()) {
                 nbtItem.setString((String) entry.getKey(), (String) entry.getValue());
@@ -202,5 +229,12 @@ public class ItemBuilder {
             return nbtItem.getItem();
         }
         return finalItem;
+    }
+
+    private static PersistentDataType<?, ?> getDataType(PersistentDataContainer pdc, NamespacedKey key) {
+        for (PersistentDataType<?, ?> dataType : PRIMITIVE_DATA_TYPES) {
+            if (pdc.has(key, dataType)) return dataType;
+        }
+        return null;
     }
 }
