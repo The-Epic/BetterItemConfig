@@ -9,7 +9,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class EnchantHandler implements ItemHandler {

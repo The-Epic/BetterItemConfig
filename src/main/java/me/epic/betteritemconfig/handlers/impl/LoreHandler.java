@@ -4,7 +4,6 @@ import me.epic.betteritemconfig.ItemBuilder;
 import me.epic.betteritemconfig.handlers.ItemHandler;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class LoreHandler implements ItemHandler {
 

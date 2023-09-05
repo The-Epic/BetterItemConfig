@@ -1,6 +1,7 @@
 package me.epic.betteritemconfig;
 
-import me.epic.betteritemconfig.handlers.*;
+import me.epic.betteritemconfig.handlers.BaseProcessor;
+import me.epic.betteritemconfig.handlers.ItemHandler;
 import me.epic.betteritemconfig.handlers.impl.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
