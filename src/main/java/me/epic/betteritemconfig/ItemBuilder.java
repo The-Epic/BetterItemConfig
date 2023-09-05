@@ -75,7 +75,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder enchantments(Map<Enchantment, Integer> enchantmentLevelMap) {
-        for (Map.Entry entry : enchantmentLevelMap.entrySet()) this.meta.addEnchant((Enchantment) entry.getKey(), (Integer) entry.getValue(), true);
+        for (Map.Entry<Enchantment, Integer> entry : enchantmentLevelMap.entrySet()) this.meta.addEnchant(entry.getKey(),entry.getValue(), true);
         return this;
     }
 
