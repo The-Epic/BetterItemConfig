@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
@@ -161,8 +162,10 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder basePotionEffect(String potion) {
-        nbtToAdd.put("Potion", potion);
+    public ItemBuilder basePotionEffect(PotionData potionData) {
+        if (!(this.meta instanceof PotionMeta potionMeta)) return this;
+
+        potionMeta.setBasePotionData(potionData);
         return this;
     }
 
