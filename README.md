@@ -1,5 +1,7 @@
 # BetterItemConfig
 
+# WIKI HAS MOVED TO https://the-epic.github.io/wiki/docs/betteritemconfig/
+---
 
 ## Maven
 
