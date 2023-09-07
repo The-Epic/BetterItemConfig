@@ -1,6 +1,6 @@
-package me.epic.betteritemconfig.handlers;
+package xyz.epicebic.betteritemconfig.handlers;
 
-import me.epic.betteritemconfig.ItemBuilder;
+import xyz.epicebic.betteritemconfig.ItemBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 

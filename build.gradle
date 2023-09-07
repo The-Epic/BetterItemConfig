@@ -10,7 +10,7 @@ compileTestJava.options.encoding = "UTF-8"
 javadoc.options.encoding = 'UTF-8'
 javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
-group = 'me.epic'
+group = 'xyz.epicebic'
 version = '3.0.0-SNAPSHOT'
 
 repositories {

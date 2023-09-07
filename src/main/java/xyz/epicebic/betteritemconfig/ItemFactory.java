@@ -1,11 +1,11 @@
-package me.epic.betteritemconfig;
+package xyz.epicebic.betteritemconfig;
 
-import me.epic.betteritemconfig.handlers.BaseProcessor;
-import me.epic.betteritemconfig.handlers.ItemHandler;
-import me.epic.betteritemconfig.handlers.impl.*;
+import xyz.epicebic.betteritemconfig.handlers.BaseProcessor;
+import xyz.epicebic.betteritemconfig.handlers.ItemHandler;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import xyz.epicebic.betteritemconfig.handlers.impl.*;
 
 import java.util.ArrayList;
 import java.util.List;

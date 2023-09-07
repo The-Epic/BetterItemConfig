@@ -1,7 +1,7 @@
-package me.epic.betteritemconfig.handlers.impl;
+package xyz.epicebic.betteritemconfig.handlers.impl;
 
-import me.epic.betteritemconfig.ItemBuilder;
-import me.epic.betteritemconfig.handlers.BaseProcessor;
+import xyz.epicebic.betteritemconfig.ItemBuilder;
+import xyz.epicebic.betteritemconfig.handlers.BaseProcessor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

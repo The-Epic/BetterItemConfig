@@ -1,4 +1,4 @@
-package me.epic.betteritemconfig;
+package xyz.epicebic.betteritemconfig;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

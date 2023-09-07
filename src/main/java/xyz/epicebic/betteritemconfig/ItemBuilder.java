@@ -1,4 +1,4 @@
-package me.epic.betteritemconfig;
+package xyz.epicebic.betteritemconfig;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;

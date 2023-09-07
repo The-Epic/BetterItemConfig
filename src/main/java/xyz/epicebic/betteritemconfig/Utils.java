@@ -1,4 +1,4 @@
-package me.epic.betteritemconfig;
+package xyz.epicebic.betteritemconfig;
 
 import net.minecraft.nbt.NBTBase;
 import org.bukkit.Color;

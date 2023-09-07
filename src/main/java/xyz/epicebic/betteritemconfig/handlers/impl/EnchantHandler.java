@@ -1,8 +1,8 @@
-package me.epic.betteritemconfig.handlers.impl;
+package xyz.epicebic.betteritemconfig.handlers.impl;
 
-import me.epic.betteritemconfig.ItemBuilder;
-import me.epic.betteritemconfig.SectionUtils;
-import me.epic.betteritemconfig.handlers.ItemHandler;
+import xyz.epicebic.betteritemconfig.ItemBuilder;
+import xyz.epicebic.betteritemconfig.SectionUtils;
+import xyz.epicebic.betteritemconfig.handlers.ItemHandler;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;

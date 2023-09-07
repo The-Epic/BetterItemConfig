@@ -1,4 +1,4 @@
-package me.epic.betteritemconfig.handlers;
+package xyz.epicebic.betteritemconfig.handlers;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
