@@ -165,7 +165,6 @@ public class ItemBuilder {
         return this;
     }
 
-    @Deprecated
     public <T, Z> ItemBuilder persistentData(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
         this.meta.getPersistentDataContainer().set(key, type, value);
 
